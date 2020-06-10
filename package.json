@@ -10,6 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
+    "moment": "^2.26.0",
+    "mz": "^2.7.0",
     "nodescore": "^0.2.7-alpha",
     "underscore": "^1.10.2"
   },

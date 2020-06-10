@@ -1,5 +1,7 @@
 {
-  "15": {
+  "1": {
+    "frequency": "once",
+    "days": "Segunda, Terça, Quarta",
     "intervals": [
       {
         "start": "10:40",
@@ -9,10 +11,12 @@
         "start": "15:00",
         "end": "15:30"
       }
-    ],
-    "days": "Everyday"
+    ]
   },
-  "197": {
+  "2": {
+    "frequency": "once",
+    "date": "25-01-2018",
+    "days": "",
     "intervals": [
       {
         "start": "10:40",
@@ -22,7 +26,59 @@
         "start": "15:00",
         "end": "15:30"
       }
-    ],
-    "days": "Everyday"
+    ]
+  },
+  "3": {
+    "frequency": "once",
+    "date": "26-01-2018",
+    "days": "",
+    "intervals": [
+      {
+        "start": "10:40",
+        "end": "11:00"
+      },
+      {
+        "start": "15:00",
+        "end": "15:30"
+      }
+    ]
+  },
+  "4": {
+    "frequency": "once",
+    "date": "26-01-2018",
+    "days": "",
+    "intervals": [
+      {
+        "start": "10:40",
+        "end": "11:00"
+      },
+      {
+        "start": "15:00",
+        "end": "15:30"
+      },
+      {
+        "start": "14:00",
+        "end": "16:30"
+      }
+    ]
+  },
+  "5": {
+    "frequency": "once",
+    "date": "26-01-2018",
+    "days": "",
+    "intervals": [
+      {
+        "start": "10:40",
+        "end": "11:00"
+      },
+      {
+        "start": "15:00",
+        "end": "15:30"
+      },
+      {
+        "start": "14:00",
+        "end": "16:30"
+      }
+    ]
   }
 }

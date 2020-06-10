@@ -1,7 +1,6 @@
 'use strict';
 const fs = require('fs');
 const database = "src/database/rules.json";
-const moment = require("moment");
 const helper = require("../helpers/getAvailableIntervals")
 
 module.exports = {
@@ -14,8 +13,9 @@ module.exports = {
             if (err) throw err;
             let rules = JSON.parse(data);
             
-            const newRuleId = Object.keys(rules).length + 1;
-            
+            const lastId = Object.keys(rules)[Object.keys(rules).length-1];
+            const newRuleId = +lastId + 1;
+
             rules[newRuleId] = rule;
              
             let ruleJson = JSON.stringify(rules, null, 2);
@@ -64,9 +64,9 @@ module.exports = {
                 finalDay = req.body.days[1];
 
             const dates = helper.getDaysByInterval(startDay, finalDay);
-            const datesWithIntervals =  await helper.getIntervalsByDate(dates);
-            
-            console.log(datesWithIntervals);
+            const intervalsByDate =  await helper.getIntervalsByDate(dates);
+            const intervalsByDayOfWeek = await helper.getIntervalsByDayOfWeek(dates);
+            const allIntervals = helper.getAllIntervals(intervalsByDate, intervalsByDayOfWeek, dates);
 
             fs.readFile(database, (err, data) => {
                 if (err) throw err;

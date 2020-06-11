@@ -16,17 +16,8 @@ const getDaysByInterval = function(startDate, finalDate){ //gets all days betwee
     return dates; //returns the array containg all days in the interval.
 };
 
-const getDaysByDates = function(dates){
-    let days = dates.map(date => {
-        let day = moment(date, "DD-MM-YYYY").format('dddd');
-        return day;
-    });
-
-    return days;
-}
-
 const fetchIntervalsByDate = function(dates){
-   
+    
     return fs.promises.readFile(database)
         .then(data => {
             const rules = JSON.parse(data); //gets all data from rules.json
@@ -84,7 +75,7 @@ const fetchIntervalsByDayOfWeek = function(dates, intervalsByDate){
                 });
 
                 datePlusInterval.intervals = intervalsFiltered;
-                //console.log(datePlusInterval);
+
                 return datePlusInterval;
             });
 
@@ -100,13 +91,26 @@ const getIntervalsByDayOfWeek = async function(dates){
     return intervalsByDayOfWeek;
 };
 
+function isObjectEmpty(object) {
+    return Object.entries(object).length === 0
+}
+
+function sortArray(array){
+    return array.sort(function (a, b) {
+        if (a.start > b.start) {
+          return 1;
+        }
+        if (a.start < b.start) {
+          return -1;
+        }
+        // a must be equal to b
+        return 0;
+      });
+}
+
 const getAllIntervals = function(intervalsByDate, intervalsByDayOfWeek, dates){
     
-    var newArr = intervalsByDate.concat(intervalsByDayOfWeek);
-    //console.log(newArr);
-    let kk = newArr.map(e => {
-        return (e.intervals)
-    }).filter((obj) => { return(Object.entries(obj).length !== 0) });
+    const newArr = intervalsByDate.concat(intervalsByDayOfWeek);
 
     let allIntervals = dates.map(date => {
 
@@ -117,17 +121,69 @@ const getAllIntervals = function(intervalsByDate, intervalsByDayOfWeek, dates){
             if(date == e.date){
                 return e.intervals;
             }
+        }).filter(interval => {
+            if(interval && ( !isObjectEmpty(interval) )){
+                return interval;
+            }
         });
+        
+        if(intervals[0] && intervals[1])
+            intervals = (intervals[0].concat(intervals[1]));
 
-        schedule.intervals = intervals;
+        let concatenedInterval = intervals[0];
 
+        for (let index = 1; index < Object.keys(intervals).length; index++) {
+            concatenedInterval = concatenedInterval.concat(intervals[index]);
+        }
+
+        if(concatenedInterval && Object.keys(concatenedInterval).length == 1 ){
+            concatenedInterval = concatenedInterval[0];
+        }
+
+        schedule.intervals = concatenedInterval;
+        
         return schedule;
-    }).filter((schedule) => {return (schedule.intervals.map(e => {
-        if(e)
-            console.log(e);
-    }))});
+    });
 
-    //console.log(allIntervals);
+    return allIntervals;
 }
 
-module.exports = { getIntervalsByDate, getDaysByInterval, getIntervalsByDayOfWeek, getAllIntervals }
+const getAvailableHours = function(dates, allIntervals){
+
+      let availableHours = allIntervals.map(schedule => {
+        let availableHour = {};
+        availableHour.date = schedule.date;
+
+        if(schedule.intervals == undefined){
+            availableHour.intervals = [{ start: "00:00", end: "23:59"}];
+        }else{
+            
+            let sortedArray = sortArray(schedule.intervals),
+                start = "00:00",
+                availablesIntervals = [],
+                aux = 0;
+            
+            sortedArray.forEach(interval => {
+                let availableInterval = {};
+                aux++; 
+                availableInterval.start = start;
+                availableInterval.end = interval.start;
+                availablesIntervals.push(availableInterval);
+                start = interval.end;
+            });
+
+            let lastInterval = {};
+            lastInterval.start = availablesIntervals[aux-1].end;
+            lastInterval.end = "23:59";
+            availablesIntervals.push(lastInterval);
+
+            availableHour.intervals = availablesIntervals;
+        }
+
+        return availableHour;
+    });
+
+    return availableHours;
+}
+
+module.exports = { getIntervalsByDate, getDaysByInterval, getIntervalsByDayOfWeek, getAllIntervals, getAvailableHours }

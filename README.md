@@ -1,5 +1,5 @@
 
-# Queue API-REST
+# Scheduler API-REST
 
 This API was developed to Cubos backend internship tecnical challenge. You will be able to manage the schedules of a clinic.
 

@@ -42,35 +42,70 @@ and enjoy it! :)
 
 I assume you're using Postman to test this API. If not, just go to https://www.getpostman.com/downloads/ and start using. :)
 
-## Routes
-```
-- GET        /post
-- POST 	     /post
-- DELETE     /post
-- GET  		 /post
-```
-
-## Endpoints
-```
-- index
-- create
-- delete
-- available
-```
+## Routes & Endpoints
+|Method  | Route | Endpoint  
+|--|--|--|
+| GET |/post  | index
+| POST |/post  | create
+| DELETE |/post  | delete
+| GET |/post  | available
 
 ### index
+This endpoint lists all created rules
+
+### create
 This method receives an JSON object and writes it in a JSON file named rules.json. The default structure to a rule is
 ```
 {
     "date": "",
     "days": [],
-    "intervals": [],
+    "intervals": [{}],
 }
 ```
-The validation to guarantee the user wont be added twice comes through `{ "email": } parameter, so don't forget to add it to run the API properly.
+The validation to guarantee the correct structure of a rule is made with jsonschema. You can see the schema below.
+```
+{
+	"date": {"type":  "string"},
+	"days": {"type":  "array"},
+	"intervals": {"type":  "array"}
+}
+```
+There is three possible uses of this structure: 
 
-### addToLine
-This method receives the id of a created User, writes it in a JSON file named queue.json and returns its position. It only adds an user if it isn't already in there and the id is from a created user. To add the user with id 1, for example, just do:
+One specific day:
+```
+{
+    "date": "26-01-2020",
+    "days": [],
+    "intervals": [{"start": "10:00", "end": "15:00"}],
+}
+```
+Daily:
+```
+{
+    "date": "",
+    "days": [],
+    "intervals": [{"start": "10:00", "end": "15:00"}],
+}
+```
+Weekly:
+```
+{
+    "date": "",
+    "days": ["Monday", "Friday"],
+    "intervals": [{"start": "10:00", "end": "15:00"}],
+}
+```
+ Possible status are:
+```
+500 - there is some error with JSON structure;
+201 - The rule was successfully created;
+```
+ 
+### delete
+This method receives the id of a created Rule, get the rule in JSON file named rules.json and delete it.
+
+In the below example the API will try to delete rule with id number 1;
 ```
 {
     "id": 1
@@ -78,48 +113,30 @@ This method receives the id of a created User, writes it in a JSON file named qu
 ```
 Possible status are:
 ```
-200 - OK - User created; 
-409 - There is no user with the passed id;
-500 - The user is already on the queue;
+400 - There is no id in the body;
+404 - There is no rule with this id;
+200 - The rule was successfully delete;
+500 - There is any other kind of error;
 ```
 
-### findPosition
-This method receives the email of an user on the queue and returns its position. 
+### available
+This method receives the two dates and returns all available intervals between these dates considering all created rules. 
 ```
 {
-    "email": ""
+	"days": ["25-06-2020", "29-06-2020"]
 }
 ```
 
 Possible status are:
 ```
-200 - OK - User found
+201 - Lists all availables hours;
 500 - There is no user with the passed email on the queue;
 ```
-### showLine
-This method returns the list of users on queue, ordered by position.
+## Tests
 
-### filterLine
-This method receives an "gênero" and return the list of users with this "gênero".
-```
-{
-    "gênero": ""
-}
-```
-Possible status are:
-```
-200 - OK - List of users;
-500 - There is no user with the passed "gênero";
-```
-### popLine
-This method deletes the first user on the queue and returns it. <br> 
-Possible status are:
-```
-200 - OK - User removed
-500 - The queue is empty;
-```
-### Collection
-There is a collection in postman to test user /createUser, /addToLine, /showLine and /popLine. Feel free to test it. <br>
-Link: https://schema.getpostman.com/json/collection/v2.1.0/collection.json
 
-For now, that's it!
+## Collection
+There is a collection in postman to test index, create, delete and available endpoints. Feel free to test it. <br>
+Link: https://www.getpostman.com/collections/e7a5d0d91c0d38abbfd8
+
+That's all, folks!

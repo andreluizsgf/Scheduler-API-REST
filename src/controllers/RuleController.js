@@ -3,6 +3,7 @@ const fs = require('fs');
 const database = "src/database/rules.json";
 const helper = require("../helpers/getAvailableIntervals")
 const createHelper = require("../helpers/createHelper")
+const allDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
 module.exports = {
 
@@ -12,12 +13,12 @@ module.exports = {
             return res.status(200).json({
                 message: "Rules successfully listed.",
                 status: true,
-                metadata: rules
+                rules: rules
             });
         }
         catch (err) {
             return res.status(400).json({
-                message: "problems listing the rules.",
+                message: "Problems listing the rules.",
                 status: false,
                 error: err.message
             });
@@ -28,6 +29,20 @@ module.exports = {
         try {
             const rule = req.body;
             
+            let err = createHelper.validateRuleFormat(rule)
+
+            if(err.length){
+                return res.status(500).json({
+                    message: "Please use the right format for rules.",
+                    status: false,
+                    error: err.message
+                });
+            }
+
+            if(!rule.date && !rule.days.length ){
+                rule.days = allDays;
+            }
+
             const rules = JSON.parse(fs.readFileSync(database, 'utf8'));
             
             const validatedIntervals = createHelper.validateRule(req.body, rules);
@@ -53,7 +68,7 @@ module.exports = {
             return res.status(201).json({
                 message: "Rule successfully created.",
                 status: true,
-                metadata: rule
+                rule: rule
             });
         }
         catch (err) {
@@ -66,8 +81,6 @@ module.exports = {
     },
 
     delete(req, res){
-        const id = req.body.id;
-
         try {
             const id = req.body.id;
 
@@ -119,7 +132,11 @@ module.exports = {
             const allIntervals = helper.getAllIntervals(intervalsByDate, intervalsByDayOfWeek, dates);
             const availableHours = helper.getAvailableHours(dates, allIntervals); 
             
-            return res.send(availableHours);
+            return res.status(201).json({
+                message: "All available hours",
+                status: true,
+                availableHours: availableHours
+            });
         } catch(err){
             return res.status(500).json({
                 message: "Problems listing available a times.",

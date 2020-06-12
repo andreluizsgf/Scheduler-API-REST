@@ -1,4 +1,5 @@
 const moment = require("moment");
+const Validator = require('jsonschema').Validator;
 
 const getDay = function(date){ 
     return moment(date, "DD-MM-YYYY").format('dddd');
@@ -6,7 +7,7 @@ const getDay = function(date){
 
 const getNewRuleId = function(rules){
     const ids = Object.keys(rules);
-    //console.log();
+    
     if(ids.length){
         const max = ids.reduce(function(a, b) {
             return Math.max(a, b) || 0;
@@ -65,14 +66,22 @@ const validateRule = function(newRule, rules){
     return intervalsChecked.filter(function(interval) {return interval != null});
 };
 
-module.exports = { getNewRuleId, validateRule }
+const validateRuleFormat = function(rule){
+    const validator = new Validator();
+    let schema = {
+        "id": "/Rule",
+        "type": "object",
+        "properties": {
+            "date": {"type": "string"},
+            "days": {"type": "array"},
+            "intervals": {"type": "array"}
+        },
+        "required": ["intervals"]
+    }
+    validator.addSchema(schema, '/Rule');
+    
+    return validator.validate(rule, schema).errors;
 
-/*
+}
 
-const start = intervall.find(element => interval.start > intervall.start || interval.start < intervall.end)
-                const end = intervall.find(element => interval.end > intervall || interval.end < intervall.end)
-
-                
-
-
-*/
+module.exports = { getNewRuleId, validateRule, validateRuleFormat }

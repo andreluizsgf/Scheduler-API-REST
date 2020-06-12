@@ -21,9 +21,9 @@ const getNewRuleId = function(rules){
 
 const validateRule = function(newRule, rules){
     let rulesArray = Object.entries(rules);
-    const max = rulesArray.length;
     let intervals = newRule.intervals;
     
+    //check if the rule is based on days (weeky, daily) or an specific date.
     let days = newRule.date ? newRule.date : newRule.days;
     let flag = newRule.date ? "date" : "days";
 
@@ -33,37 +33,38 @@ const validateRule = function(newRule, rules){
 
         rulesArray.forEach(rule => {
             let rulesIntervals = Object.entries(rule[1].intervals);
-            const max = rule[1].intervals.length;
             let check = false;
 
             rulesIntervals.forEach(e => {
-                if((interval.start <= e[1].end)  &&  (interval.end >= e[1].start) && ((days == rule[1].date) || (rule[1].days.some(r=> days.indexOf(r) >= 0)) || (rule[1].days.includes(getDay(days))))){
-                    check = true;
-                }
 
-                intervalChecked.check = check;
-                /*
-                for (let index = 0; index < max; index++) {
-                    let check = false;
-                    if((interval.start <= e[1].end)  &&  (interval.end >= e[1].start) && ((days == rule[1].date) || (rule[1].days.some(r=> days.indexOf(r) >= 0)) || (rule[1].days.includes(getDay(days))))){
+                if(flag == "date"){ //based on specific date, checks if there is any conflict with created rules
+                    if((interval.start < e[1].end)  &&  (interval.end > e[1].start) && (days == rule[1].date || (rule[1].days.includes(getDay(days)))) ){
                         check = true;
                         intervalChecked.check = check;
-                        break;
                     }
+                }
+                else if(flag == "days"){ //based on days of the week, checks if there is any conflict with created rules
+                    let array3 = days.filter(function(day) { return !(rule[1].days.includes(day)) });
+                    intervalChecked.days = array3;
+                    if((interval.start < e[1].end)  &&  (interval.end > e[1].start && (rule[1].days.some(r=> days.indexOf(r) >= 0) || (days.includes(getDay(rule[1].date))))) && !array3.length ){
+                        check = true;
+                        intervalChecked.check = check;
+                    }
+                }
 
-                    intervalChecked.check = check;   
-                }*/
+                
             });
             
         });
-        
-        if(!intervalChecked.check)
-            return interval;
+
+        if(!intervalChecked.check){
+            return intervalChecked;
+        }
         else
             return;
     });
 
-    return intervalsChecked.filter(function(interval) {return interval != null});
+    return intervalsChecked.filter(function(e){return e != undefined});
 };
 
 const validateRuleFormat = function(rule){

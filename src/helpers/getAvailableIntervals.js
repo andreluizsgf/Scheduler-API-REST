@@ -28,7 +28,7 @@ const fetchIntervalsByDate = function(dates){
                 datePlusInterval.date = date;  //set the date.
                 
                 let intervals = arr.map(day => {
-                    if(day[1]['date'] == date)
+                    if(day[1]['date'] == date) //only returns an interval if the the date is equal to the date of the created rule;
                         return day[1]['intervals'];
                 }).filter((obj) => { return ![null, undefined].includes(obj) });
  
@@ -63,7 +63,7 @@ const fetchIntervalsByDayOfWeek = function(dates, intervalsByDate){
                 let intervals = arr.map(rule => {
                     return rule[1]['days'].map(day =>{
                         let dateDay = moment(date, "DD-MM-YYYY").format('dddd');
-                        if(day == dateDay){
+                        if(day == dateDay){ //only returns an interval if the day of the week based on the date is equal to the day of the created rule;
                             return rule[1]['intervals'];
                         }
                     }).filter((obj) => { return (obj != undefined) });
@@ -92,18 +92,23 @@ const getIntervalsByDayOfWeek = async function(dates){
 };
 
 function isObjectEmpty(object) {
-    return Object.entries(object).length === 0
+    return Object.entries(object).length === 0 //just checks if object is empty
+}
+
+function getSizeOfObject(object) {
+    return Object.keys(object).length //just checks if object is empty
 }
 
 function sortArray(array){
     return array.sort(function (a, b) {
+        a = b[0] ? a[0] : a;
+        b = b[0] ? b[0] : b;
         if (a.start > b.start) {
           return 1;
         }
         if (a.start < b.start) {
           return -1;
         }
-        // a must be equal to b
         return 0;
       });
 }
@@ -132,11 +137,11 @@ const getAllIntervals = function(intervalsByDate, intervalsByDayOfWeek, dates){
 
         let concatenedInterval = intervals[0];
 
-        for (let index = 1; index < Object.keys(intervals).length; index++) {
+        for (let index = 1; index < getSizeOfObject(intervals); index++) {
             concatenedInterval = concatenedInterval.concat(intervals[index]);
         }
 
-        if(concatenedInterval && Object.keys(concatenedInterval).length == 1 ){
+        if(concatenedInterval && getSizeOfObject(intervals) == 1 ){
             concatenedInterval = concatenedInterval[0];
         }
 
@@ -163,13 +168,13 @@ const getAvailableHours = function(dates, allIntervals){
                 availablesIntervals = [],
                 aux = 0;
             
-            sortedArray.forEach(interval => {
+            sortedArray.forEach(interval => { //form all possible available intervals based on the created ones. All days starts at 00:00 and ends ate 23:59.
                 let availableInterval = {};
                 aux++; 
-                availableInterval.start = start;
-                availableInterval.end = interval.start;
+                availableInterval.start = start; 
+                availableInterval.end = interval.start ? interval.start : interval[0].start;
                 availablesIntervals.push(availableInterval);
-                start = interval.end;
+                start = interval.end ? interval.end : interval[0].end;
             });
 
             let lastInterval = {};

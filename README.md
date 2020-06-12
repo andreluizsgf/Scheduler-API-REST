@@ -70,6 +70,14 @@ The validation to guarantee the correct structure of a rule is made with jsonsch
 	"intervals": {"type":  "array"}
 }
 ```
+This endpoint allows you to choose any date with format DD-MM-YYYY, any week day written like below and interval objects. 
+```
+{
+	"date": "DD-MM-YYYY",
+	"days": ["Sunday","Monday", "Tuesday", "Wednesday", "Thursday, "Friday", "Saturday"],
+	"intervals": [{ start: "10:40", end: "11:00" }, { start: "15:00", end: "15:30" }]
+}
+```
 There is three possible uses of this structure: 
 
 One specific day:
@@ -96,10 +104,14 @@ Weekly:
     "intervals": [{"start": "10:00", "end": "15:00"}],
 }
 ```
- Possible status are:
+There is validation to ensure time conflict with already created rules.
+For example, if there is a created rule with date "12-06-2020" will be thrown an error informing the conflict. As this date is an Friday, if you try to create a rule with Friday an error will also be thrown .
+  
+Possible status are:
 ```
-500 - there is some error with JSON structure;
+400 - All intervals are already created; 
 201 - The rule was successfully created;
+500 - there is some error with JSON structure;
 ```
  
 ### delete
@@ -120,7 +132,7 @@ Possible status are:
 ```
 
 ### available
-This method receives the two dates and returns all available intervals between these dates considering all created rules. 
+This method receives the two dates with format "DD-MM-YYYY" and returns all available intervals between these dates considering all created rules. 
 ```
 {
 	"days": ["25-06-2020", "29-06-2020"]
@@ -134,6 +146,10 @@ Possible status are:
 ```
 ## Tests
 
+There is a few tests to ensure all endpoints responses and proper functioning of the functions. All tests can be found in tests/routes.test.js
+
+### Support files
+To test the application were created an fake database and a fake controller to simulate the real Controller.
 
 ## Collection
 There is a collection in postman to test index, create, delete and available endpoints. Feel free to test it. <br>

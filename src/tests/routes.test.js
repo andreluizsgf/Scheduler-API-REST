@@ -71,29 +71,3 @@ describe('Delete a specific rule', () => {
 
   })
 })
-
-describe('List all available intervals', () => {
-  it('should list all available intervals between two dates', async () => {
-    let rules =[ 
-    {"date": "26-01-2018", "days" : [], "intervals": [{ "start": "10:09", "end": "10:10" },{ "start": "09:05", "end": "10:08" }]},
-    {"date": "28-01-2018", "days" : [], "intervals": [{ "start": "12:59", "end": "16:10" },{ "start": "15:05", "end": "16:42" }]},
-    {"date": "", "days" : ["Friday", "Monday"], "intervals": [{ "start": "20:39", "end": "21:10" }]}
-    ]
-
-    rules.forEach(rule => {
-      RuleController.create(rule);  
-    })
-
-    let dates = [{"start": "25-01-2018", "end": "29-01-2018"}]
-    
-    //console.log(RuleController.available(dates));
-
-    //RuleController.delete(1);
-
-    //const rules = JSON.parse(fs.readFileSync(database, 'utf8'));
-    //const rulesLength = Object.keys(rules).length;
-
-    expect(0).toEqual(0)
-
-  })
-})

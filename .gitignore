@@ -4,6 +4,5 @@ node_modules/
 .npm
 # dotenv environment variables file
 .env
-
-database/
+src/database/
 documentary.yml

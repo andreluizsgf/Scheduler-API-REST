@@ -9,14 +9,17 @@ describe('Test create function', () => {
     const res = await request(server.app)
       .post('/api/rules')
       .send({
-        "date": "26-01-2018",
+        "date": "12-06-2020",
         "days" : [],
         "intervals": [
-            { "start": "10:09", "end": "10:10" },
-            { "start": "09:05", "end": "10:08" }
+            { "start": "21:10", "end": "21:40" },
+            { "start": "22:50", "end": "23:00" }
         ]
-      })
-      
+      }
+    )
+    const id = 
+    await request(server.app).delete('/api/rules').send({"id": 1})
+
     expect(res.statusCode).toEqual(201)
     expect(res.body.message).toEqual('Rule successfully created.')
   })
